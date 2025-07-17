@@ -6,6 +6,8 @@ import Carousel from "./components/Carousel";
 
 import cards from "./constants/cards";
 
+import "./3D";
+
 const App = () => {
   return (
     <Canvas camera={{ position: [0, 0, 100], fov: 15 }}>

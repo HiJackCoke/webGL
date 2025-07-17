@@ -52,7 +52,9 @@ const Card = ({ url, position, rotation }: Props) => {
       onPointerOut={pointerOut}
       position={position}
       rotation={rotation}
-    />
+    >
+      <bentPlaneGeometry args={[0.1, 1, 1, 20, 20]} />
+    </Image>
   );
 };
 
