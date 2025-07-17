@@ -3,7 +3,7 @@ import { useRef } from "react";
 import { useFrame, Vector3 } from "@react-three/fiber";
 import { useScroll, useTexture } from "@react-three/drei";
 
-import { MeshSineMaterial } from "../3D/materials/MeshSineMaterial";
+import { MeshSineMaterial } from "../materials/MeshSineMaterial";
 
 interface Props {
   position: Vector3;

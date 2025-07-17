@@ -1,9 +1,9 @@
 import { Canvas } from "@react-three/fiber";
 import { Environment, ScrollControls } from "@react-three/drei";
 
-import Rig from "./components/Rig";
-import Carousel from "./components/Carousel";
-import Banner from "./components/Banner";
+import Rig from "./3D/components/Rig";
+import Carousel from "./3D/components/Carousel";
+import Banner from "./3D/components/Banner";
 
 import cards from "./constants/cards";
 
