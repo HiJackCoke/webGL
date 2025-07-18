@@ -8,17 +8,31 @@ interface Props {
   url: string;
   position: Vector3;
   rotation: Euler;
+
+  onPointerOver?: (e: ThreeEvent<PointerEvent>) => void;
+  onPointerOut?: (e: ThreeEvent<PointerEvent>) => void;
+  onClick?: (e: ThreeEvent<MouseEvent>) => void;
 }
 
-const Card = ({ url, position, rotation }: Props) => {
+const Card = ({
+  url,
+  position,
+  rotation,
+
+  onPointerOver,
+  onPointerOut,
+  onClick,
+}: Props) => {
   const ref = useRef<THREE.Mesh>(null);
   const isHover = useRef(false);
 
-  const pointerOver = (e: ThreeEvent<PointerEvent>) => {
+  const handlePointerOver = (e: ThreeEvent<PointerEvent>) => {
     e.stopPropagation();
+    onPointerOver?.(e);
     isHover.current = true;
   };
-  const pointerOut = () => {
+  const handlePointerOut = (e: ThreeEvent<PointerEvent>) => {
+    onPointerOut?.(e);
     isHover.current = false;
   };
 
@@ -48,8 +62,9 @@ const Card = ({ url, position, rotation }: Props) => {
       url={url}
       transparent
       side={THREE.DoubleSide}
-      onPointerOver={pointerOver}
-      onPointerOut={pointerOut}
+      onPointerOver={handlePointerOver}
+      onPointerOut={handlePointerOut}
+      onClick={onClick}
       position={position}
       rotation={rotation}
     >
