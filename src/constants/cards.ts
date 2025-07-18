@@ -4,10 +4,18 @@ const cards: Card[] = [
   {
     id: 1,
     imageUrl: "/portfolio/puzzle.png",
+    data: {
+      title: "Puzzle",
+      description: "Puzzle is a game that you can play with your friends.",
+    },
   },
   {
     id: 2,
     imageUrl: "/portfolio/npm.png",
+    data: {
+      title: "NPM",
+      description: "NPM is a package manager for Node.js.",
+    },
   },
   {
     id: 3,
