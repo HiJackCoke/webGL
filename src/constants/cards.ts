@@ -3,43 +3,51 @@ import { Card } from "@/types/constants";
 const cards: Card[] = [
   {
     id: 1,
-    imageUrl: "/img1_.jpg",
+    imageUrl: "/portfolio/puzzle.png",
   },
   {
     id: 2,
-    imageUrl: "/img1_.jpg",
+    imageUrl: "/portfolio/npm.png",
   },
   {
     id: 3,
-    imageUrl: "/img1_.jpg",
+    imageUrl: "/portfolio/wooriga.png",
   },
   {
     id: 4,
-    imageUrl: "/img1_.jpg",
+    imageUrl: "/portfolio/oms.png",
   },
   {
     id: 5,
-    imageUrl: "/img1_.jpg",
+    imageUrl: "/portfolio/mpx.png",
   },
   {
     id: 6,
-    imageUrl: "/img1_.jpg",
+    imageUrl: "/portfolio/wepware.png",
   },
   {
     id: 7,
-    imageUrl: "/img1_.jpg",
+    imageUrl: "/portfolio/sadadream.png",
   },
   {
     id: 8,
-    imageUrl: "/img1_.jpg",
+    imageUrl: "/portfolio/lisnup.png",
   },
   {
     id: 9,
-    imageUrl: "/img1_.jpg",
+    imageUrl: "/portfolio/npickple.png",
   },
   {
     id: 10,
-    imageUrl: "/img1_.jpg",
+    imageUrl: "/portfolio/thetrue.png",
+  },
+  {
+    id: 11,
+    imageUrl: "/portfolio/salady.png",
+  },
+  {
+    id: 12,
+    imageUrl: "/portfolio/cafe24.png",
   },
 ];
 
