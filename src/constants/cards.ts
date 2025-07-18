@@ -1,6 +1,6 @@
-import { Card } from "@/types/constants";
+import { Card, CardDataProps } from "@/types/constants";
 
-const cards: Card[] = [
+const cards: Card<CardDataProps>[] = [
   {
     id: 1,
     imageUrl: "/portfolio/puzzle.png",

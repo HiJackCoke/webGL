@@ -4,4 +4,9 @@ type Card<T = any> = {
   data?: T;
 };
 
-export type { Card };
+interface CardDataProps {
+  title: string;
+  description: string;
+}
+
+export type { Card, CardDataProps };

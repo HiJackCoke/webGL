@@ -1,49 +1,40 @@
 import Card from "./Card";
 import { Card as CardType } from "@/types/constants";
 
-type EventParams = {
-  id: number;
-  data?: DataProps;
-};
+type EventParams<T> = T;
 
-interface DataProps {
-  title: string;
-  description: string;
-}
-
-interface Props {
-  // fit?
-  cards: CardType<DataProps>[];
+type Props<T extends CardType> = {
+  cards: T[];
   radius?: number;
 
-  onCardPointerOver?: (params: EventParams) => void;
-  onCardPointerOut?: (params: EventParams) => void;
-  onCardClick?: (params: EventParams) => void;
-}
+  onCardPointerOver?: (params: EventParams<T>) => void;
+  onCardPointerOut?: (params: EventParams<T>) => void;
+  onCardClick?: (params: EventParams<T>) => void;
+};
 
-const Carousel = ({
+const Carousel = <T extends CardType>({
   cards,
   radius,
   onCardPointerOver,
   onCardPointerOut,
   onCardClick,
-}: Props) => {
+}: Props<T>) => {
   const count = cards.length;
   const baseRadius = radius ?? count / 5;
 
-  return cards.map(({ id, imageUrl, data }, index) => (
+  return cards.map((card, index) => (
     <Card
-      key={id}
-      url={imageUrl}
+      key={card.id}
+      url={card.imageUrl}
       position={[
         Math.sin((index / count) * Math.PI * 2) * baseRadius,
         0,
         Math.cos((index / count) * Math.PI * 2) * baseRadius,
       ]}
       rotation={[0, (index / count) * Math.PI * 2, 0]}
-      onPointerOver={() => onCardPointerOver?.({ id, data })}
-      onPointerOut={() => onCardPointerOut?.({ id, data })}
-      onClick={() => onCardClick?.({ id, data })}
+      onPointerOver={() => onCardPointerOver?.(card)}
+      onPointerOut={() => onCardPointerOut?.(card)}
+      onClick={() => onCardClick?.(card)}
     />
   ));
 };
