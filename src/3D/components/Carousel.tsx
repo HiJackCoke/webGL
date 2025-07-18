@@ -19,7 +19,7 @@ const Carousel = ({ cards, radius }: Props) => {
         0,
         Math.cos((i / count) * Math.PI * 2) * baseRadius,
       ]}
-      rotation={[0, Math.PI + (i / count) * Math.PI * 2, 0]}
+      rotation={[0, (i / count) * Math.PI * 2, 0]}
     />
   ));
 };
