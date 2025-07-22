@@ -4,20 +4,27 @@ import { Euler, ThreeEvent, useFrame, Vector3 } from "@react-three/fiber";
 import { Image } from "@react-three/drei";
 import { easing } from "maath";
 
+type EventHandler<Event> = (
+  e: ThreeEvent<Event>,
+  mesh: THREE.Mesh | null
+) => void;
+
 interface Props {
   url: string;
   position: Vector3;
   rotation: Euler;
+  bent?: number;
 
-  onPointerOver?: (e: ThreeEvent<PointerEvent>) => void;
-  onPointerOut?: (e: ThreeEvent<PointerEvent>) => void;
-  onClick?: (e: ThreeEvent<MouseEvent>) => void;
+  onPointerOver?: EventHandler<PointerEvent>;
+  onPointerOut?: EventHandler<PointerEvent>;
+  onClick?: EventHandler<MouseEvent>;
 }
 
 const Card = ({
   url,
   position,
   rotation,
+  bent = 0,
 
   onPointerOver,
   onPointerOut,
@@ -28,12 +35,19 @@ const Card = ({
 
   const handlePointerOver = (e: ThreeEvent<PointerEvent>) => {
     e.stopPropagation();
-    onPointerOver?.(e);
+    onPointerOver?.(e, ref.current);
     isHover.current = true;
   };
+
   const handlePointerOut = (e: ThreeEvent<PointerEvent>) => {
-    onPointerOut?.(e);
+    onPointerOut?.(e, ref.current);
     isHover.current = false;
+  };
+
+  const handleClick = (e: ThreeEvent<MouseEvent>) => {
+    e.stopPropagation();
+
+    onClick?.(e, ref.current);
   };
 
   useFrame((_, delta) => {
@@ -64,11 +78,11 @@ const Card = ({
       side={THREE.DoubleSide}
       onPointerOver={handlePointerOver}
       onPointerOut={handlePointerOut}
-      onClick={onClick}
+      onClick={handleClick}
       position={position}
       rotation={rotation}
     >
-      <bentPlaneGeometry args={[-0.1, 1, 1, 20, 20]} />
+      {bent !== 0 && <bentPlaneGeometry args={[bent, 1, 1, 20, 20]} />}
     </Image>
   );
 };
