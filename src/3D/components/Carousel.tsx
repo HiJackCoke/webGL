@@ -1,14 +1,14 @@
 import * as THREE from "three";
 
 import { useRef, useState } from "react";
-import { Vector3, Euler, useFrame } from "@react-three/fiber";
+import { useFrame } from "@react-three/fiber";
 import { easing } from "maath";
 
 import Card from "./Card";
-
 import { Card as CardType } from "@/types/constants";
 
 type EventParams<T> = T;
+type UtilVector3 = [number, number, number];
 
 type Props<T extends CardType> = {
   cards: T[];
@@ -21,8 +21,8 @@ type Props<T extends CardType> = {
 
 interface RefProps {
   mesh: THREE.Mesh;
-  originPosition: Vector3;
-  originRotation: Euler;
+  originPosition: UtilVector3;
+  originRotation: UtilVector3;
 }
 
 const SCALE = 1;
@@ -53,22 +53,19 @@ const Carousel = <T extends CardType>({
 
   const handleAnimation = (
     index: number,
-    position: Vector3,
-    rotation: Euler
+    position: UtilVector3,
+    rotation: UtilVector3
   ) => {
     const mesh = meshesRef.current[index];
     if (!mesh) return;
 
     if (selectedMeshRef.current) {
-      const hackedVector3 = JSON.parse(
-        JSON.stringify(selectedMeshRef.current.originPosition)
-      ) as [number, number, number];
-      const hackedEuler = JSON.parse(
-        JSON.stringify(selectedMeshRef.current.originRotation)
-      ) as [number, number, number];
-
-      selectedMeshRef.current.mesh.position.set(...hackedVector3);
-      selectedMeshRef.current.mesh.rotation.set(...hackedEuler);
+      selectedMeshRef.current.mesh.position.set(
+        ...selectedMeshRef.current.originPosition
+      );
+      selectedMeshRef.current.mesh.rotation.set(
+        ...selectedMeshRef.current.originRotation
+      );
 
       if (mesh.uuid === selectedMeshRef.current.mesh.uuid) {
         selectedMeshRef.current = null;
@@ -111,12 +108,12 @@ const Carousel = <T extends CardType>({
   return cards.map((card, index) => {
     const { id, imageUrl } = card;
 
-    const position: Vector3 = [
+    const position: UtilVector3 = [
       Math.sin((index / count) * Math.PI * 2) * baseRadius,
       0,
       Math.cos((index / count) * Math.PI * 2) * baseRadius,
     ];
-    const rotation: Euler = [0, (index / count) * Math.PI * 2, 0];
+    const rotation: UtilVector3 = [0, (index / count) * Math.PI * 2, 0];
 
     return (
       <Card
