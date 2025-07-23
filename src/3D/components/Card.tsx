@@ -1,16 +1,18 @@
 import * as THREE from "three";
-import { useRef } from "react";
+import { forwardRef, useImperativeHandle, useRef } from "react";
 import { Euler, ThreeEvent, useFrame, Vector3 } from "@react-three/fiber";
 import { Image } from "@react-three/drei";
 import { easing } from "maath";
 
 type EventHandler<Event> = (
-  e: ThreeEvent<Event>,
-  mesh: THREE.Mesh | null
+  e: ThreeEvent<Event>
+  // mesh: THREE.Mesh | null
 ) => void;
 
 interface Props {
   url: string;
+
+
   position: Vector3;
   rotation: Euler;
   bent?: number;
@@ -20,71 +22,85 @@ interface Props {
   onClick?: EventHandler<MouseEvent>;
 }
 
-const Card = ({
-  url,
-  position,
-  rotation,
-  bent = 0,
+const Card = forwardRef<THREE.Mesh, Props>(
+  (
+    {
+      url,
+      position,
+      rotation,
 
-  onPointerOver,
-  onPointerOut,
-  onClick,
-}: Props) => {
-  const ref = useRef<THREE.Mesh>(null);
-  const isHover = useRef(false);
+      bent = 0,
 
-  const handlePointerOver = (e: ThreeEvent<PointerEvent>) => {
-    e.stopPropagation();
-    onPointerOver?.(e, ref.current);
-    isHover.current = true;
-  };
+      onPointerOver,
+      onPointerOut,
+      onClick,
+    },
+    ref
+  ) => {
+    const imageRef = useRef<THREE.Mesh>(null);
+    const isHover = useRef(false);
 
-  const handlePointerOut = (e: ThreeEvent<PointerEvent>) => {
-    onPointerOut?.(e, ref.current);
-    isHover.current = false;
-  };
+    const handlePointerOver = (e: ThreeEvent<PointerEvent>) => {
+      e.stopPropagation();
+      onPointerOver?.(e);
+      isHover.current = true;
+    };
 
-  const handleClick = (e: ThreeEvent<MouseEvent>) => {
-    e.stopPropagation();
+    const handlePointerOut = (e: ThreeEvent<PointerEvent>) => {
+      onPointerOut?.(e);
+      isHover.current = false;
+    };
 
-    onClick?.(e, ref.current);
-  };
+    const handleClick = (e: ThreeEvent<MouseEvent>) => {
+      e.stopPropagation();
 
-  useFrame((_, delta) => {
-    if (!ref.current) return;
+      onClick?.(e);
+    };
 
-    easing.damp3(ref.current.scale, isHover.current ? 1.15 : 1, 0.1, delta);
-    easing.damp(
-      ref.current.material,
-      "radius",
-      isHover ? 0.25 : 0.1,
-      0.2,
-      delta
+    useFrame((_, delta) => {
+
+      if (!imageRef.current) return;
+
+      easing.damp3(
+        imageRef.current.scale,
+        isHover.current ? 1.15 : 1,
+        0.1,
+        delta
+      );
+      easing.damp(
+        imageRef.current.material,
+        "radius",
+        isHover ? 0.25 : 0.1,
+        0.2,
+        delta
+      );
+      easing.damp(
+        imageRef.current.material,
+        "zoom",
+        isHover.current ? 1 : 1.5,
+        0.2,
+        delta
+      );
+    });
+
+    useImperativeHandle(ref, () => imageRef.current as THREE.Mesh);
+
+    return (
+      <Image
+        ref={imageRef}
+        url={url}
+        transparent
+        side={THREE.DoubleSide}
+        onPointerOver={handlePointerOver}
+        onPointerOut={handlePointerOut}
+        onClick={handleClick}
+        position={position}
+        rotation={rotation}
+      >
+        {bent !== 0 && <bentPlaneGeometry args={[bent, 1, 1, 20, 20]} />}
+      </Image>
     );
-    easing.damp(
-      ref.current.material,
-      "zoom",
-      isHover.current ? 1 : 1.5,
-      0.2,
-      delta
-    );
-  });
-
-  return (
-    <Image
-      ref={ref}
-      url={url}
-      transparent
-      side={THREE.DoubleSide}
-      onPointerOver={handlePointerOver}
-      onPointerOut={handlePointerOut}
-      onClick={handleClick}
-      position={position}
-      rotation={rotation}
-    >
-      {bent !== 0 && <bentPlaneGeometry args={[bent, 1, 1, 20, 20]} />}
-    </Image>
-  );
-};
+  }
+);
 
 export default Card;

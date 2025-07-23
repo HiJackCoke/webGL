@@ -1,6 +1,6 @@
 import * as THREE from "three";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Vector3, Euler, useFrame } from "@react-three/fiber";
 import { useScroll } from "@react-three/drei";
 import { easing } from "maath";
@@ -38,7 +38,9 @@ const Carousel = <T extends CardType>({
   const count = cards.length;
   const baseRadius = radius ?? count / 5;
 
+  const meshesRef = useRef<(THREE.Mesh | null)[]>([]);
   const selectedMeshRef = useRef<RefProps | null>(null);
+
   const scroll = useScroll();
 
   const handleCardClick = (card: T) => {
@@ -46,10 +48,11 @@ const Carousel = <T extends CardType>({
   };
 
   const handleAnimation = (
-    mesh: THREE.Mesh | null,
+    index: number,
     position: Vector3,
     rotation: Euler
   ) => {
+    const mesh = meshesRef.current[index];
     if (!mesh) return;
 
     if (selectedMeshRef.current) {
@@ -102,15 +105,17 @@ const Carousel = <T extends CardType>({
     return (
       <Card
         key={id}
+        ref={(el) => (meshesRef.current[index] = el)}
         url={imageUrl}
         bent={-0.1}
         position={position}
         rotation={rotation}
         onPointerOver={() => onCardPointerOver?.(card)}
         onPointerOut={() => onCardPointerOut?.(card)}
-        onClick={(_, mesh) => {
+        onClick={() => {
           handleCardClick(card);
-          handleAnimation(mesh, position, rotation);
+
+          handleAnimation(index, position, rotation);
         }}
       />
     );
