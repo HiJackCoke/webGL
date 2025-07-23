@@ -1,8 +1,7 @@
 import * as THREE from "three";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Vector3, Euler, useFrame } from "@react-three/fiber";
-import { useScroll } from "@react-three/drei";
 import { easing } from "maath";
 
 import Card from "./Card";
@@ -40,10 +39,15 @@ const Carousel = <T extends CardType>({
 
   const meshesRef = useRef<(THREE.Mesh | null)[]>([]);
   const selectedMeshRef = useRef<RefProps | null>(null);
-
-  const scroll = useScroll();
+  const [selectedId, setSelectedId] = useState<number | null>(null);
 
   const handleCardClick = (card: T) => {
+    if (selectedId === card.id) {
+      setSelectedId(null);
+    } else {
+      setSelectedId(card.id);
+    }
+
     onCardClick?.(card);
   };
 
@@ -81,15 +85,27 @@ const Carousel = <T extends CardType>({
 
   useFrame((_, delta) => {
     if (!selectedMeshRef.current) return;
+    if (!selectedMeshRef.current.mesh.parent) return;
 
     easing.damp3(
       selectedMeshRef.current.mesh.position,
-      [0, 0.3, 0],
+      [0, 0.1, 0],
       0.1,
       delta
     );
-    easing.damp3(selectedMeshRef.current.mesh.scale, SCALE + 1.5, 0.1, delta);
-    selectedMeshRef.current.mesh.rotation.y = scroll.offset * (Math.PI * 2);
+    easing.damp3(selectedMeshRef.current.mesh.scale, SCALE + 1, 0.1, delta);
+
+    meshesRef.current.forEach((mesh) => {
+      if (!mesh || mesh?.uuid === selectedMeshRef.current?.mesh.uuid) return;
+      if (Array.from(mesh.scale).some((scale) => scale === 0)) return;
+
+      if (mesh.scale.x < 0.01) {
+        mesh.scale.setScalar(0);
+
+        return;
+      }
+      easing.damp3(mesh.scale, mesh.scale.x - 0.4, 0.1, delta);
+    });
   });
 
   return cards.map((card, index) => {
@@ -107,6 +123,7 @@ const Carousel = <T extends CardType>({
         key={id}
         ref={(el) => (meshesRef.current[index] = el)}
         url={imageUrl}
+        animation={!selectedId}
         bent={-0.1}
         position={position}
         rotation={rotation}
@@ -114,7 +131,6 @@ const Carousel = <T extends CardType>({
         onPointerOut={() => onCardPointerOut?.(card)}
         onClick={() => {
           handleCardClick(card);
-
           handleAnimation(index, position, rotation);
         }}
       />

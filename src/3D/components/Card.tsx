@@ -12,7 +12,7 @@ type EventHandler<Event> = (
 interface Props {
   url: string;
 
-
+  animation?: boolean;
   position: Vector3;
   rotation: Euler;
   bent?: number;
@@ -28,7 +28,7 @@ const Card = forwardRef<THREE.Mesh, Props>(
       url,
       position,
       rotation,
-
+      animation = true,
       bent = 0,
 
       onPointerOver,
@@ -58,7 +58,7 @@ const Card = forwardRef<THREE.Mesh, Props>(
     };
 
     useFrame((_, delta) => {
-
+      if (!animation) return;
       if (!imageRef.current) return;
 
       easing.damp3(
