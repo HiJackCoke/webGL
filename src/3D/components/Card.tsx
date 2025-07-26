@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { forwardRef, useImperativeHandle, useRef } from "react";
-import { Euler, ThreeEvent, useFrame, Vector3 } from "@react-three/fiber";
+import { Euler, ThreeEvent, useFrame } from "@react-three/fiber";
 import { Image } from "@react-three/drei";
 import { easing } from "maath";
 
@@ -13,9 +13,12 @@ interface Props {
   url: string;
 
   animation?: boolean;
-  position: Vector3;
+  position: THREE.Vector3Tuple;
   rotation: Euler;
   bent?: number;
+  zoom?: number;
+  radius?: number;
+  scale?: number;
 
   onPointerOver?: EventHandler<PointerEvent>;
   onPointerOut?: EventHandler<PointerEvent>;
@@ -30,6 +33,9 @@ const Card = forwardRef<THREE.Mesh, Props>(
       rotation,
       animation = true,
       bent = 0,
+      zoom = 1,
+      radius = 0.1,
+      scale = 1,
 
       onPointerOver,
       onPointerOut,
@@ -63,21 +69,21 @@ const Card = forwardRef<THREE.Mesh, Props>(
 
       easing.damp3(
         imageRef.current.scale,
-        isHover.current ? 1.15 : 1,
+        isHover.current ? 1.15 : scale,
         0.1,
         delta
       );
       easing.damp(
         imageRef.current.material,
         "radius",
-        isHover ? 0.25 : 0.1,
+        isHover ? 0.25 : radius,
         0.2,
         delta
       );
       easing.damp(
         imageRef.current.material,
         "zoom",
-        isHover.current ? 1 : 1.5,
+        isHover.current ? 1 : zoom,
         0.2,
         delta
       );
@@ -94,6 +100,9 @@ const Card = forwardRef<THREE.Mesh, Props>(
         onPointerOver={handlePointerOver}
         onPointerOut={handlePointerOut}
         onClick={handleClick}
+        radius={radius}
+        zoom={zoom}
+        scale={scale}
         position={position}
         rotation={rotation}
       >
