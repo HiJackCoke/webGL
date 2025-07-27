@@ -5,8 +5,8 @@ import { Image } from "@react-three/drei";
 import { easing } from "maath";
 
 type EventHandler<Event> = (
-  e: ThreeEvent<Event>
-  // mesh: THREE.Mesh | null
+  e: ThreeEvent<Event>,
+  mesh: THREE.Mesh | null
 ) => void;
 
 interface Props {
@@ -48,31 +48,31 @@ const Card = forwardRef<THREE.Mesh, Props>(
 
     const handlePointerOver = (e: ThreeEvent<PointerEvent>) => {
       e.stopPropagation();
-      onPointerOver?.(e);
+      onPointerOver?.(e, imageRef.current);
       isHover.current = true;
     };
 
     const handlePointerOut = (e: ThreeEvent<PointerEvent>) => {
-      onPointerOut?.(e);
+      onPointerOut?.(e, imageRef.current);
       isHover.current = false;
     };
 
     const handleClick = (e: ThreeEvent<MouseEvent>) => {
       e.stopPropagation();
 
-      onClick?.(e);
+      onClick?.(e, imageRef.current);
     };
 
     useFrame((_, delta) => {
       if (!animation) return;
       if (!imageRef.current) return;
 
-      easing.damp3(
-        imageRef.current.scale,
-        isHover.current ? 1.15 : scale,
-        0.1,
-        delta
-      );
+      // easing.damp3(
+      //   imageRef.current.scale,
+      //   isHover.current ? 1.15 : scale,
+      //   0.1,
+      //   delta
+      // );
       easing.damp(
         imageRef.current.material,
         "radius",
