@@ -73,10 +73,11 @@ const Card = forwardRef<THREE.Mesh, Props>(
       //   0.1,
       //   delta
       // );
+
       easing.damp(
         imageRef.current.material,
         "radius",
-        isHover ? 0.25 : radius,
+        isHover.current ? 0.25 : radius,
         0.2,
         delta
       );
