@@ -11,6 +11,7 @@ type ButtonProps = {
   depth?: number;
   radius?: number;
   renderOrder?: number;
+  variant?: "primary" | "danger";
   onClick?: (e: ThreeEvent<MouseEvent>) => void;
 };
 
@@ -23,6 +24,7 @@ const Button = ({
   depth = 0.28,
   radius = 0.08,
   renderOrder = 10,
+  variant = "primary",
   onClick,
 }: ButtonProps) => {
   const [hovered, setHovered] = useState(false);
@@ -30,9 +32,25 @@ const Button = ({
 
   useCursor(hovered);
 
-  const baseColor = useMemo(() => "#aa7799", []);
-  const hoverColor = useMemo(() => "#996688", []);
-  const activeColor = useMemo(() => "#885577", []);
+  const colors = useMemo(() => {
+    if (variant === "danger") {
+      return {
+        base: "#dc2626",
+        hover: "#b91c1c",
+        active: "#991b1b",
+      };
+    }
+    // primary variant (default)
+    return {
+      base: "#0000ff",
+      hover: "#0000cc",
+      active: "#000099",
+    };
+  }, [variant]);
+
+  const baseColor = colors.base;
+  const hoverColor = colors.hover;
+  const activeColor = colors.active;
 
   const bgColor = active ? activeColor : hovered ? hoverColor : baseColor;
 
@@ -64,6 +82,7 @@ const Button = ({
         renderOrder={renderOrder}
         fontSize={height * 0.5}
         color="#ffffff"
+        fontWeight="bold"
         anchorX="center"
         anchorY="middle"
         textAlign="center"
