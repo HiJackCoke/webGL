@@ -3,6 +3,7 @@ import { forwardRef, useImperativeHandle, useRef } from "react";
 import { Euler, ThreeEvent, useFrame } from "@react-three/fiber";
 import { Image } from "@react-three/drei";
 import { easing } from "maath";
+import Button from "./Button";
 
 type EventHandler<Event> = (
   e: ThreeEvent<Event>,
@@ -23,6 +24,8 @@ interface Props {
   onPointerOver?: EventHandler<PointerEvent>;
   onPointerOut?: EventHandler<PointerEvent>;
   onClick?: EventHandler<MouseEvent>;
+  onClose?: EventHandler<MouseEvent>;
+  onDetail?: EventHandler<MouseEvent>;
 }
 
 const Card = forwardRef<THREE.Mesh, Props>(
@@ -40,6 +43,8 @@ const Card = forwardRef<THREE.Mesh, Props>(
       onPointerOver,
       onPointerOut,
       onClick,
+      onClose,
+      onDetail,
     },
     ref
   ) => {
@@ -63,6 +68,18 @@ const Card = forwardRef<THREE.Mesh, Props>(
       onClick?.(e, imageRef.current);
     };
 
+    const handleClose = (e: ThreeEvent<MouseEvent>) => {
+      e.stopPropagation();
+
+      onClose?.(e, imageRef.current);
+    };
+
+    const handleDetail = (e: ThreeEvent<MouseEvent>) => {
+      e.stopPropagation();
+
+      onDetail?.(e, imageRef.current);
+    };
+
     useFrame((_, delta) => {
       if (!animation) return;
       if (!imageRef.current) return;
@@ -77,7 +94,7 @@ const Card = forwardRef<THREE.Mesh, Props>(
       easing.damp(
         imageRef.current.material,
         "radius",
-        isHover.current ? 0.25 : radius,
+        isHover.current && bent !== 0 ? 0.25 : radius,
         0.2,
         delta
       );
@@ -93,22 +110,47 @@ const Card = forwardRef<THREE.Mesh, Props>(
     useImperativeHandle(ref, () => imageRef.current as THREE.Mesh);
 
     return (
-      <Image
-        ref={imageRef}
-        url={url}
-        transparent
-        side={THREE.DoubleSide}
-        onPointerOver={handlePointerOver}
-        onPointerOut={handlePointerOut}
-        onClick={handleClick}
-        radius={radius}
-        zoom={zoom}
-        scale={scale}
-        position={position}
-        rotation={rotation}
-      >
-        {bent !== 0 && <bentPlaneGeometry args={[bent, 1, 1, 20, 20]} />}
-      </Image>
+      <>
+        <Image
+          ref={imageRef}
+          url={url}
+          transparent
+          side={THREE.DoubleSide}
+          onPointerOver={handlePointerOver}
+          onPointerOut={handlePointerOut}
+          onClick={handleClick}
+          radius={radius}
+          zoom={zoom}
+          scale={scale}
+          position={position}
+          rotation={rotation}
+        >
+          {bent !== 0 && <bentPlaneGeometry args={[bent, 1, 1, 20, 20]} />}
+
+          <Button
+            visible={bent === 0}
+            label="🔍"
+            width={0.15}
+            height={0.15}
+            depth={0.15}
+            radius={0.075}
+            position={[-0.4, 0.4, 0]}
+            onClick={handleDetail}
+          />
+
+          <Button
+            variant="danger"
+            visible={bent === 0}
+            label="✖"
+            width={0.15}
+            height={0.15}
+            depth={0.15}
+            radius={0.075}
+            position={[0.4, 0.4, 0]}
+            onClick={handleClose}
+          />
+        </Image>
+      </>
     );
   }
 );
