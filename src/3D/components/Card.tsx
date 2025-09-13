@@ -13,6 +13,7 @@ type EventHandler<Event> = (
 interface Props {
   url: string;
 
+  isSelected?: boolean;
   animation?: boolean;
   position: THREE.Vector3Tuple;
   rotation: Euler;
@@ -32,6 +33,8 @@ const Card = forwardRef<THREE.Mesh, Props>(
   (
     {
       url,
+
+      isSelected = false,
       position,
       rotation,
       animation = true,
@@ -125,10 +128,12 @@ const Card = forwardRef<THREE.Mesh, Props>(
           position={position}
           rotation={rotation}
         >
-          {bent !== 0 && <bentPlaneGeometry args={[bent, 1, 1, 20, 20]} />}
+          {!isSelected && bent !== 0 && (
+            <bentPlaneGeometry args={[bent, 1, 1, 20, 20]} />
+          )}
 
           <Button
-            visible={bent === 0}
+            visible={isSelected}
             label="🔍"
             width={0.15}
             height={0.15}
@@ -140,7 +145,7 @@ const Card = forwardRef<THREE.Mesh, Props>(
 
           <Button
             variant="danger"
-            visible={bent === 0}
+            visible={isSelected}
             label="✖"
             width={0.15}
             height={0.15}
