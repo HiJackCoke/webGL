@@ -1,7 +1,7 @@
 import * as THREE from "three";
 
-import { ReactNode, useRef } from "react";
-import { useFrame } from "@react-three/fiber";
+import { ReactNode, useRef, useMemo } from "react";
+import { useFrame, useThree } from "@react-three/fiber";
 import { ScrollControlsState, useScroll } from "@react-three/drei";
 import { easing } from "maath";
 
@@ -15,6 +15,21 @@ const Rig = ({ rotation = [0, 0, 0], children, onScrollChange }: Props) => {
   const scrollRef = useRef(0);
   const ref = useRef<THREE.Group>(null);
   const scroll = useScroll();
+  const { viewport } = useThree();
+
+  const aspectRatio = useMemo(() => {
+    const ratio = viewport.width / viewport.height;
+    return ratio < 1 ? 15 / ratio : 10;
+  }, [viewport.width, viewport.height]);
+
+  const cameraPosition = useMemo(() => {
+    return new THREE.Vector3(0, 0, aspectRatio);
+  }, [viewport.width, viewport.height]);
+
+  const fogPosition = useMemo(
+    () => [aspectRatio, aspectRatio + 3] as [number, number],
+    [viewport.width, viewport.height]
+  );
 
   useFrame((state, delta) => {
     if (!ref.current) return;
@@ -29,7 +44,11 @@ const Rig = ({ rotation = [0, 0, 0], children, onScrollChange }: Props) => {
     //   0.3,
     //   delta
     // );
-    easing.damp3(state.camera.position, [0, 0, 10], 0.3, delta);
+    if (state.scene.fog) {
+      easing.damp(state.scene.fog, "near", fogPosition[0], 0.3, delta);
+      easing.damp(state.scene.fog, "far", fogPosition[1], 0.3, delta);
+    }
+    easing.damp3(state.camera.position, cameraPosition, 0.3, delta);
 
     easing.dampE(
       ref.current.rotation,
@@ -46,7 +65,12 @@ const Rig = ({ rotation = [0, 0, 0], children, onScrollChange }: Props) => {
     }
   });
 
-  return <group ref={ref}>{children}</group>;
+  return (
+    <>
+      <fog attach="fog" args={["#a79", ...fogPosition]} />
+      <group ref={ref}>{children}</group>;
+    </>
+  );
 };
 
 export default Rig;

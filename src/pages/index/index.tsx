@@ -39,7 +39,7 @@ const Index = () => {
 
   return (
     <>
-      <fog attach="fog" args={["#a79", 8.5, 12]} />
+      {/* <fog attach="fog" args={["#a79", 8.5, 12]} /> */}
 
       <ScrollControls pages={5} infinite>
         <Rig rotation={[0, 0, isSelected ? 0 : 0.15]}>
