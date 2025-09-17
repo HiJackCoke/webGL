@@ -18,8 +18,7 @@ const Rig = ({ rotation = [0, 0, 0], children, onScrollChange }: Props) => {
   const { viewport } = useThree();
 
   const aspectRatio = useMemo(() => {
-    const ratio = viewport.width / viewport.height;
-    return ratio < 1 ? 15 / ratio : 10;
+    return viewport.aspect < 1 ? 15 / viewport.aspect : 10;
   }, [viewport.width, viewport.height]);
 
   const cameraPosition = useMemo(() => {
