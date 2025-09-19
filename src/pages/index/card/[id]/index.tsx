@@ -10,16 +10,21 @@ import cards from "@/constants/cards";
 import Card from "@/3D/components/Card";
 import { useFrame, useThree } from "@react-three/fiber";
 import { useNavigate, useParams } from "react-router-dom";
+import CardDetailContent from "@/components/CardDetailContent";
+
+import { createRoot } from "react-dom/client";
+import { getMeshPixelSize } from "@/utils";
 
 const GAP = 0.05;
 
+// 화면 사이즈 조정할떄마다 HTML 태그 버벅임 해소 필요
+
 const Index = () => {
   const ref = useRef<THREE.Mesh | null>(null);
-  const htmlRef = useRef(document.getElementById("html") as HTMLElement);
 
   const params = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { viewport } = useThree();
+  const { viewport, camera, size } = useThree();
 
   const isVertical = useMemo(() => {
     if (viewport.aspect < 1) {
@@ -28,18 +33,12 @@ const Index = () => {
     return false;
   }, [viewport.aspect]);
 
-  const htmlPosition = useMemo(() => {
-    if (isVertical) {
-      return [0, -GAP, 0] as [number, number, number];
-    } else {
-      return [GAP, 0, 0] as [number, number, number];
-    }
-  }, [isVertical]);
-
   useFrame((state, delta) => {
     const { aspect, width, height, distance } = state.viewport;
 
     if (!ref.current) return;
+
+    // const { width: w, height: h } = getMeshPixelSize(ref.current, camera, size);
 
     if (aspect < 1) {
       const fixeHeight = (((height / distance) * 10) / aspect) * 1.5;
@@ -73,6 +72,18 @@ const Index = () => {
     }
   }, []);
 
+  useEffect(() => {
+    const html = document.getElementById("html");
+    if (!html) return;
+
+    const root = createRoot(html);
+    root.render(<CardDetailContent isVertical={isVertical} />);
+
+    return () => {
+      root.unmount();
+    };
+  }, [isVertical]);
+
   if (!card) return null;
 
   return (
@@ -90,11 +101,6 @@ const Index = () => {
           />
         </Rig>
       </ScrollControls>
-      <Html portal={htmlRef} position={htmlPosition}>
-        <div style={isVertical ? { transform: "translateX(-50%)" } : undefined}>
-          oo
-        </div>
-      </Html>
     </>
   );
 };
