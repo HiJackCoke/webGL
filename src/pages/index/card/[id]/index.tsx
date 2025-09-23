@@ -1,4 +1,4 @@
-import { Html, ScrollControls } from "@react-three/drei";
+import { ScrollControls } from "@react-three/drei";
 
 import * as THREE from "three";
 import { easing } from "maath";
@@ -13,7 +13,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import CardDetailContent from "@/components/CardDetailContent";
 
 import { createRoot } from "react-dom/client";
-import { getMeshPixelSize } from "@/utils";
 
 const GAP = 0.05;
 
@@ -24,7 +23,7 @@ const Index = () => {
 
   const params = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { viewport, camera, size } = useThree();
+  const { viewport } = useThree();
 
   const isVertical = useMemo(() => {
     if (viewport.aspect < 1) {
@@ -77,7 +76,9 @@ const Index = () => {
     if (!html) return;
 
     const root = createRoot(html);
-    root.render(<CardDetailContent isVertical={isVertical} />);
+    root.render(
+      <CardDetailContent data={card?.data} isVertical={isVertical} />
+    );
 
     return () => {
       root.unmount();
