@@ -35,16 +35,16 @@ const Button = ({
   const colors = useMemo(() => {
     if (variant === "danger") {
       return {
-        base: "#dc2626",
-        hover: "#b91c1c",
-        active: "#991b1b",
+        base: "#b94a48", // base red
+        hover: "#993d3b", // hover red
+        active: "#7a2f2d", // active red
       };
     }
     // primary variant (default)
     return {
-      base: "#0000ff",
-      hover: "#0000cc",
-      active: "#000099",
+      base: "#3b7a57", // base green
+      hover: "#33664a", // hover green
+      active: "#264c37", // active green
     };
   }, [variant]);
 

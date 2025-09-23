@@ -66,7 +66,7 @@ const Rig = ({ rotation = [0, 0, 0], children, onScrollChange }: Props) => {
 
   return (
     <>
-      <fog attach="fog" args={["#a79", ...fogPosition]} />
+      <fog attach="fog" args={["#95a99c", ...fogPosition]} />
       <group ref={ref}>{children}</group>;
     </>
   );

@@ -8,10 +8,10 @@ import "../../3D";
 const Index = () => {
   return (
     <>
-      <div id="html" />
+      <div id="html" className="w-screen h-screen overflow-scroll absolute" />
       <Canvas camera={{ position: [0, 0, 100], fov: 15 }}>
         <Outlet />
-        <Environment preset="dawn" background blur={0.5} />
+        <Environment preset="park" background blur={0.5} />
       </Canvas>
     </>
   );
