@@ -78,17 +78,16 @@ const Carousel = <T extends CardType>({
   };
 
   useFrame((_, delta) => {
+    const card = selectedMeshRef.current;
     if (navigateRef.current) {
-      const card = selectedMeshRef.current?.mesh;
-
       if (!card) return;
 
-      const rig = card.parent;
+      const rig = card.mesh.parent;
       if (!rig) return;
 
       const originRotation = new THREE.Euler(0, 0, 0);
 
-      easing.dampE(card.rotation, originRotation, 0.1, delta);
+      easing.dampE(card.mesh.rotation, originRotation, 0.1, delta);
       scroll.offset = 0;
 
       if (!timeoutRef.current) {
@@ -99,20 +98,16 @@ const Carousel = <T extends CardType>({
       }
     }
 
-    if (!selectedMeshRef.current?.mesh.parent) return;
+    if (!card?.mesh.parent) return;
 
     const isOff = selectedUUIDRef.current === null;
 
-    const originPosition = new THREE.Vector3(
-      ...selectedMeshRef.current.originPosition
-    );
+    const originPosition = new THREE.Vector3(...card.originPosition);
     const originScale = new THREE.Vector3(1, 1, 1);
 
     if (isOff) {
-      const isPositionEquals =
-        selectedMeshRef.current.mesh.position.equals(originPosition);
-      const isScaleEquals =
-        selectedMeshRef.current.mesh.scale.equals(originScale);
+      const isPositionEquals = card.mesh.position.equals(originPosition);
+      const isScaleEquals = card.mesh.scale.equals(originScale);
 
       if (isPositionEquals && isScaleEquals) {
         selectedMeshRef.current = null;
@@ -121,7 +116,7 @@ const Carousel = <T extends CardType>({
     }
 
     easing.damp3(
-      selectedMeshRef.current.mesh.position,
+      card.mesh.position,
       isOff ? originPosition : [0, 0, 0],
       0.1,
       delta
@@ -130,7 +125,7 @@ const Carousel = <T extends CardType>({
     meshesRef.current.forEach((mesh) => {
       if (!mesh) return;
 
-      if (mesh.uuid === selectedMeshRef.current?.mesh.uuid) {
+      if (mesh.uuid === card.mesh.uuid) {
         easing.damp3(mesh.scale, isOff ? 1 : SCALE + 0.8, 0.1, delta);
       } else {
         easing.damp3(mesh.scale, isOff ? 1 : 0, 0.1, delta);
