@@ -1,4 +1,5 @@
 import { CardDataProps } from "@/types/constants";
+import Anchor from "./Anchor";
 
 interface Props {
   isVertical?: boolean;
@@ -14,7 +15,23 @@ const CardDetailContent = ({ isVertical = false, data }: Props) => {
     <div
       className={`bg-[#fefefecc] rounded-2xl shadow-md p-8 overflow-y-auto duration-0.2 z-10 absolute left-1/2 top-1/2 ${className}`}
     >
-      <h1 className="text-3xl font-bold text-[#1b2a24] mb-6">{data?.title}</h1>
+      <h1 className="text-3xl font-bold text-[#1b2a24] mb-6">
+        {data?.link ? (
+          <Anchor href={data.link}>
+            {data.title}
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path d="M14 3h7v7m0-7L10 14"></path>
+            </svg>
+          </Anchor>
+        ) : (
+          data?.title
+        )}
+      </h1>
 
       <h2 className="text-xl font-bold text-[#1b2a24] mb-3">설명</h2>
       <p className="text-[#2d3a34] mb-8">{data?.description}</p>

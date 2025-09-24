@@ -1,3 +1,4 @@
+import Anchor from "@/components/Anchor";
 import { Card, CardDataProps } from "@/types/constants";
 
 const cards: Card<CardDataProps>[] = [
@@ -6,8 +7,16 @@ const cards: Card<CardDataProps>[] = [
     imageUrl: "/portfolio/puzzle.png",
     data: {
       title: "Puzzle 웹 게임", // 요청에 따라 기존 제목 유지
-      description:
-        "직접 개발한 오픈소스 라이브러리 'react-cosmos-diagram'을 활용하여 구현한 퍼즐 맞추기 웹 게임입니다. 라이브러리의 실용성을 검증하고 다양한 인터랙션 기능을 시연합니다.",
+      description: (
+        <>
+          직접 개발한 오픈소스 라이브러리{" "}
+          <Anchor href="https://www.npmjs.com/package/react-cosmos-diagram">
+            react-cosmos-diagram
+          </Anchor>
+          을 활용하여 구현한 퍼즐 맞추기 웹 게임입니다. 라이브러리의 실용성을
+          검증하고 다양한 인터랙션 기능을 시연합니다.
+        </>
+      ),
       period: "2025. 04. 09", // 정확한 작업 기간 반영
       link: "https://whimsical-alpaca-29974a.netlify.app/",
       contributions: [
@@ -196,7 +205,7 @@ const cards: Card<CardDataProps>[] = [
       description:
         "클라우드 저장소 서비스인 '인바인더'의 관리자 프로젝트를 리드하고 재개발했습니다.",
       period: "2024. 06. ~",
-      link: "https://www.wepware.com/web/main.do?lang=ko",
+      // link: "https://www.wepware.com/web/main.do?lang=ko",
       contributions: [
         {
           title: "JSP 기반 관리자 프로젝트의 React/TypeScript 기반 재개발 리드",
@@ -274,7 +283,7 @@ const cards: Card<CardDataProps>[] = [
       description:
         "웹 예능, 웹 드라마, 영화 등 다양한 숏폼 콘텐츠를 제공하며, 소셜 미디어와 유사한 피드 경험을 통해 사용자 간 콘텐츠 소비 및 공유를 촉진하는 플랫폼입니다.",
       period: "2020.",
-      link: "https://play.google.com/store/apps/details?id=kr.co.manse.npick&hl=ko&pli=1",
+      // link: "https://play.google.com/store/apps/details?id=kr.co.manse.npick&hl=ko&pli=1",
       contributions: [
         {
           title: "iOS 환경 숏폼 비디오 피드 스크롤 및 자동 재생 문제 해결",
@@ -296,6 +305,7 @@ const cards: Card<CardDataProps>[] = [
     imageUrl: "/portfolio/thetrue.png",
     data: {
       title: "더 트루", // 요청에 따라 기존 제목 유지
+      link: "https://the-true.co.kr/",
       description:
         "중고 명품의 효율적인 판매 대행을 위한 관리 시스템입니다. WebRTC 기반의 실시간 바코드 스캐닝 및 통합 재고 관리 기능을 통해 입고부터 출고까지 전 과정의 운영 효율성을 확보합니다.",
       period: "2021.",
@@ -341,6 +351,7 @@ const cards: Card<CardDataProps>[] = [
     imageUrl: "/portfolio/cafe24.png",
     data: {
       title: "마켓플러스",
+      link: "https://www.cafe24.com/commerce/channel/market.html",
       description:
         "국내 웹 빌더 '마켓플러스'의 어드민 페이지로, 빌더 운영 및 사용자 관리를 위한 핵심 기능을 제공합니다. 복잡한 데이터를 효율적으로 관리하고 서비스 운영을 지원하는 중요한 인터페이스입니다.",
       period: "2020.00. ~ 2021.00.",

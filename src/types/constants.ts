@@ -1,3 +1,5 @@
+import { ReactNode } from "react";
+
 type Card<T = any> = {
   id: number;
   imageUrl: string;
@@ -13,7 +15,7 @@ interface ContributionItem {
 
 interface CardDataProps {
   title: string;
-  description: string;
+  description: ReactNode;
   period: string;
   link?: string;
   contributions: ContributionItem[];
