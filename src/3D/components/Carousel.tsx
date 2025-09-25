@@ -21,12 +21,18 @@ type Props<T extends CardType> = {
   onCardClose?: (params: EventParams<T>) => void;
 };
 
-interface RefProps {
+interface CardMeshRef {
   mesh: THREE.Mesh;
   originPosition: THREE.Vector3Tuple;
 }
 
+interface AnimationRef {
+  navigation: number;
+  scroll: number;
+}
+
 const SCALE = 1;
+const EPSILON = 0.001;
 
 const Carousel = <T extends CardType>({
   cards,
@@ -43,12 +49,16 @@ const Carousel = <T extends CardType>({
   const scroll = useScroll();
 
   const meshesRef = useRef<(THREE.Mesh | null)[]>([]);
-  const selectedMeshRef = useRef<RefProps | null>(null);
+  const selectedMeshRef = useRef<CardMeshRef | null>(null);
   const selectedUUIDRef = useRef<
     THREE.Object3D<THREE.Object3DEventMap>["uuid"] | null
   >(null);
+
   const navigateRef = useRef("");
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const animationRef = useRef<AnimationRef>({
+    navigation: 0,
+    scroll: 0,
+  });
 
   const handleClose = (card: T) => () => {
     selectedUUIDRef.current = null;
@@ -58,46 +68,99 @@ const Carousel = <T extends CardType>({
   const handleClick =
     (card: T, position: THREE.Vector3Tuple) =>
     (_: unknown, mesh: THREE.Mesh | null) => {
-      // selectedCardRef.current = card;
-
       if (!mesh) return;
 
       if (selectedUUIDRef.current !== mesh.uuid) {
         selectedUUIDRef.current = mesh.uuid;
+
         onCardClick?.(card);
       }
 
-      selectedMeshRef.current = {
-        mesh,
-        originPosition: position,
+      const animate = () => {
+        const index = meshesRef.current.findIndex(
+          (mesh) => mesh?.uuid === selectedUUIDRef.current
+        );
+
+        const targetOffset = (index / cards.length) % 1;
+        const realScrollPages = scroll.pages + 1;
+
+        const top =
+          (scroll.el.scrollHeight / realScrollPages) *
+          scroll.pages *
+          targetOffset;
+
+        scroll.el.scrollTo({
+          top,
+          behavior: "smooth",
+        });
+
+        animationRef.current.scroll = targetOffset;
+        selectedMeshRef.current = {
+          mesh,
+          originPosition: position,
+        };
+        scroll.el.style.pointerEvents = "none";
       };
+
+      animate();
     };
 
   const handleDetail = (card: T) => () => {
     navigateRef.current = `/card/${card.id}`;
   };
 
-  useFrame((_, delta) => {
-    const card = selectedMeshRef.current;
-    if (navigateRef.current) {
-      if (!card) return;
+  const animateNavigation = (card: CardMeshRef, delta: number) => {
+    if (!navigateRef.current) return;
+    if (!card) return;
 
-      const rig = card.mesh.parent;
-      if (!rig) return;
+    const rig = card.mesh.parent;
+    if (!rig) return;
 
-      const originRotation = new THREE.Euler(0, 0, 0);
+    const originRotation = new THREE.Euler(0, 0, 0);
 
-      easing.dampE(card.mesh.rotation, originRotation, 0.1, delta);
-      scroll.offset = 0;
+    easing.dampE(card.mesh.rotation, originRotation, 0.1, delta);
+    // 스크롤 위치 강제 전환x
+    scroll.offset = 0;
 
-      if (!timeoutRef.current) {
-        timeoutRef.current = setTimeout(() => {
-          navigate(navigateRef.current);
-          timeoutRef.current = null;
-        }, 300);
-      }
+    const isCenter =
+      Math.abs(
+        (animationRef.current.navigation % 1) - (card.mesh.rotation.y % 1)
+      ) < EPSILON;
+
+    if (isCenter) {
+      navigate(navigateRef.current);
     }
 
+    animationRef.current.navigation = card.mesh.rotation.y;
+  };
+
+  const animateRotation = (
+    card: CardMeshRef,
+    isOff: boolean,
+    delta: number
+  ) => {
+    const selectedMeshScale = SCALE + 0.8;
+
+    const isCompleted = selectedMeshRef.current?.mesh.scale.equals(
+      new THREE.Vector3(selectedMeshScale, selectedMeshScale, selectedMeshScale)
+    );
+
+    if (isCompleted) {
+      scroll.el.style.pointerEvents = "";
+    }
+
+    meshesRef.current.forEach((mesh) => {
+      if (!mesh) return;
+
+      if (mesh.uuid === card.mesh.uuid) {
+        easing.damp3(mesh.scale, isOff ? 1 : selectedMeshScale, 0.1, delta);
+      } else {
+        easing.damp3(mesh.scale, isOff ? 1 : 0, 0.1, delta);
+      }
+    });
+  };
+
+  const animate = (card: CardMeshRef, delta: number) => {
     if (!card?.mesh.parent) return;
 
     const isOff = selectedUUIDRef.current === null;
@@ -113,24 +176,28 @@ const Carousel = <T extends CardType>({
         selectedMeshRef.current = null;
         return;
       }
-    }
 
-    easing.damp3(
-      card.mesh.position,
-      isOff ? originPosition : [0, 0, 0],
-      0.1,
-      delta
-    );
+      easing.damp3(card.mesh.position, originPosition, 0.1, delta);
+      animateRotation(card, isOff, delta);
+    } else {
+      const isCenter =
+        Math.abs((scroll.offset % 1) - (animationRef.current.scroll % 1)) <
+        EPSILON;
 
-    meshesRef.current.forEach((mesh) => {
-      if (!mesh) return;
-
-      if (mesh.uuid === card.mesh.uuid) {
-        easing.damp3(mesh.scale, isOff ? 1 : SCALE + 0.8, 0.1, delta);
-      } else {
-        easing.damp3(mesh.scale, isOff ? 1 : 0, 0.1, delta);
+      if (isCenter) {
+        easing.damp3(card.mesh.position, [0, 0, 0], 0.1, delta);
+        animateRotation(card, isOff, delta);
       }
-    });
+    }
+  };
+
+  useFrame((_, delta) => {
+    const card = selectedMeshRef.current;
+
+    if (!card) return;
+
+    animateNavigation(card, delta);
+    animate(card, delta);
   });
 
   return cards.map((card, index) => {
