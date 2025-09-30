@@ -6,19 +6,25 @@ import { ScrollControlsState, useScroll } from "@react-three/drei";
 import { easing } from "maath";
 
 interface Props {
+  zoom?: number;
   rotation?: [number, number, number];
   children: ReactNode;
   onScrollChange?: (state: ScrollControlsState) => void;
 }
 
-const Rig = ({ rotation = [0, 0, 0], children, onScrollChange }: Props) => {
+const Rig = ({
+  zoom = 1,
+  rotation = [0, 0, 0],
+  children,
+  onScrollChange,
+}: Props) => {
   const scrollRef = useRef(0);
   const ref = useRef<THREE.Group>(null);
   const scroll = useScroll();
   const { viewport } = useThree();
 
   const aspectRatio = useMemo(() => {
-    return viewport.aspect < 1 ? 15 / viewport.aspect : 10;
+    return viewport.aspect < 1 ? 15 / zoom / viewport.aspect : 10;
   }, [viewport.width, viewport.height]);
 
   const cameraPosition = useMemo(() => {

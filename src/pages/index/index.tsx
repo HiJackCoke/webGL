@@ -42,7 +42,7 @@ const Index = () => {
       {/* <fog attach="fog" args={["#a79", 8.5, 12]} /> */}
 
       <ScrollControls pages={5} infinite>
-        <Rig rotation={[0, 0, isSelected ? 0 : 0.15]}>
+        <Rig zoom={1.5} rotation={[0, 0, isSelected ? 0 : 0.15]}>
           <Carousel
             cards={cards}
             onCardClick={() => setIsSelected(true)}
