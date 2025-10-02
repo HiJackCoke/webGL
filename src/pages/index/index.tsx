@@ -40,7 +40,11 @@ const Index = () => {
   return (
     <>
       <ScrollControls pages={5} infinite>
-        <Rig zoom={1.5} rotation={[0, 0, isSelected ? 0 : 0.15]}>
+        <Rig
+          scrollHintVisible
+          zoom={1.5}
+          rotation={[0, 0, isSelected ? 0 : 0.15]}
+        >
           <Carousel
             cards={cards}
             onCardClick={() => setIsSelected(true)}

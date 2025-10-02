@@ -1,20 +1,23 @@
 import * as THREE from "three";
 
-import { ReactNode, useRef, useMemo } from "react";
+import { ReactNode, useRef, useMemo, useState } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
-import { ScrollControlsState, useScroll } from "@react-three/drei";
+import { Html, ScrollControlsState, useScroll } from "@react-three/drei";
 import { easing } from "maath";
+import ScrollHint from "./ScrollHint";
 
 interface Props {
   zoom?: number;
   rotation?: [number, number, number];
   children: ReactNode;
+  scrollHintVisible?: boolean;
   onScrollChange?: (state: ScrollControlsState) => void;
 }
 
 const Rig = ({
   zoom = 1,
   rotation = [0, 0, 0],
+  scrollHintVisible = false,
   children,
   onScrollChange,
 }: Props) => {
@@ -22,6 +25,7 @@ const Rig = ({
   const ref = useRef<THREE.Group>(null);
   const scroll = useScroll();
   const { viewport } = useThree();
+  const [isVisible, setIsVisible] = useState(true);
 
   const aspectRatio = useMemo(() => {
     return viewport.aspect < 1 ? 15 / zoom / viewport.aspect : 10;
@@ -39,6 +43,7 @@ const Rig = ({
   useFrame((state, delta) => {
     if (!ref.current) return;
     if (!state.events.update) return;
+    if (scroll.offset > 0 && isVisible) setIsVisible(false);
 
     const rotationY = -scroll.offset * (Math.PI * 2);
     state.events.update();
@@ -70,8 +75,13 @@ const Rig = ({
     }
   });
 
+  console.log(scrollHintVisible, isVisible);
+
   return (
     <>
+      <Html wrapperClass="z-[9]" fullscreen>
+        <ScrollHint visible={scrollHintVisible && isVisible} />
+      </Html>
       <fog attach="fog" args={["#95a99c", ...fogPosition]} />
       <group ref={ref}>{children}</group>;
     </>

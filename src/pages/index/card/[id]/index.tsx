@@ -16,8 +16,6 @@ import { createRoot } from "react-dom/client";
 
 const GAP = 0.05;
 
-// 화면 사이즈 조정할떄마다 HTML 태그 버벅임 해소 필요
-
 const Index = () => {
   const ref = useRef<THREE.Mesh | null>(null);
 
