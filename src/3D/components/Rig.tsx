@@ -75,8 +75,6 @@ const Rig = ({
     }
   });
 
-  console.log(scrollHintVisible, isVisible);
-
   return (
     <>
       <Html wrapperClass="z-[9]" fullscreen>
