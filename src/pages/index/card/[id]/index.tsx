@@ -87,7 +87,7 @@ const Index = () => {
 
   return (
     <>
-      <ScrollControls prepend={true}>
+      <ScrollControls enabled={false} prepend={true}>
         <Rig rotation={[0, 0, 0]}>
           <Card
             ref={ref}
