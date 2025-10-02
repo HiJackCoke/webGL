@@ -7,7 +7,6 @@ import Banner from "../../3D/components/Banner";
 import cards from "../../constants/cards";
 
 import { MutableRefObject, useEffect, useRef, useState } from "react";
-import ScrollHint from "@/3D/components/ScrollHint";
 
 const Index = () => {
   const portal = useRef(
@@ -40,9 +39,6 @@ const Index = () => {
 
   return (
     <>
-
-      {/* <fog attach="fog" args={["#a79", 8.5, 12]} /> */}
-
       <ScrollControls pages={5} infinite>
         <Rig zoom={1.5} rotation={[0, 0, isSelected ? 0 : 0.15]}>
           <Carousel

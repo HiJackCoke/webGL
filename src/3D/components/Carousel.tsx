@@ -70,11 +70,7 @@ const Carousel = <T extends CardType>({
     (_: unknown, mesh: THREE.Mesh | null) => {
       if (!mesh) return;
 
-      if (selectedUUIDRef.current !== mesh.uuid) {
-        selectedUUIDRef.current = mesh.uuid;
-
-        onCardClick?.(card);
-      }
+      if (selectedUUIDRef.current === mesh.uuid) return;
 
       const animate = () => {
         const index = meshesRef.current.findIndex(
@@ -102,6 +98,8 @@ const Carousel = <T extends CardType>({
         scroll.el.style.pointerEvents = "none";
       };
 
+      selectedUUIDRef.current = mesh.uuid;
+      onCardClick?.(card);
       animate();
     };
 
