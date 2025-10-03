@@ -120,6 +120,13 @@ const Carousel = <T extends CardType>({
     const originRotation = new THREE.Euler(0, 0, 0);
 
     easing.dampE(card.mesh.rotation, originRotation, 0.1, delta);
+
+
+    // 첫번째 인덱스 카드 rotation이 항상 0인 이슈 수정
+    if (card.mesh.rotation.y === 0) {
+      card.mesh.rotation.y = scroll.offset;
+    }
+
     // 스크롤 위치 강제 전환x
     scroll.offset = 0;
 
