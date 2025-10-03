@@ -14,6 +14,7 @@ type EventParams<T> = T;
 type Props<T extends CardType> = {
   cards: T[];
   radius?: number;
+  vertical?: boolean;
 
   onCardPointerOver?: (params: EventParams<T>) => void;
   onCardPointerOut?: (params: EventParams<T>) => void;
@@ -37,6 +38,8 @@ const EPSILON = 0.001;
 const Carousel = <T extends CardType>({
   cards,
   radius,
+  vertical = false,
+
   onCardPointerOver,
   onCardPointerOut,
   onCardClick,
@@ -201,9 +204,12 @@ const Carousel = <T extends CardType>({
   return cards.map((card, index) => {
     const { id, imageUrl } = card;
 
+    const circlePosition = Math.sin((index / count) * Math.PI * 2) * baseRadius;
+    const circleRotation = (index / count) * Math.PI * 2;
+
     const position: THREE.Vector3Tuple = [
-      Math.sin((index / count) * Math.PI * 2) * baseRadius,
-      0,
+      vertical ? 0 : circlePosition,
+      vertical ? -circlePosition : 0,
       Math.cos((index / count) * Math.PI * 2) * baseRadius,
     ];
 
@@ -219,7 +225,11 @@ const Carousel = <T extends CardType>({
         bent={isSelected ? 0 : -0.1}
         zoom={isSelected ? 1 : 1.5}
         position={position}
-        rotation={[0, (index / count) * Math.PI * 2, 0]}
+        rotation={[
+          vertical ? circleRotation : 0,
+          vertical ? 0 : circleRotation,
+          0,
+        ]}
         onPointerOver={() => onCardPointerOver?.(card)}
         onPointerOut={() => onCardPointerOut?.(card)}
         onClick={handleClick(card, position)}

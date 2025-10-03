@@ -11,6 +11,8 @@ interface Props {
   rotation?: [number, number, number];
   children: ReactNode;
   scrollHintVisible?: boolean;
+  vertical?: boolean;
+
   onScrollChange?: (state: ScrollControlsState) => void;
 }
 
@@ -19,6 +21,8 @@ const Rig = ({
   rotation = [0, 0, 0],
   scrollHintVisible = false,
   children,
+  vertical = false,
+
   onScrollChange,
 }: Props) => {
   const scrollRef = useRef(0);
@@ -45,7 +49,7 @@ const Rig = ({
     if (!state.events.update) return;
     if (scroll.offset > 0 && isVisible) setIsVisible(false);
 
-    const rotationY = -scroll.offset * (Math.PI * 2);
+    const circleRotation = -scroll.offset * (Math.PI * 2);
     state.events.update();
 
     // easing.damp3(
@@ -62,7 +66,11 @@ const Rig = ({
 
     easing.dampE(
       ref.current.rotation,
-      [rotation[0], rotationY, rotation[2]],
+      [
+        vertical ? circleRotation : rotation[0],
+        vertical ? rotation[1] : circleRotation,
+        rotation[2],
+      ],
       0.1,
       delta
     );

@@ -51,6 +51,7 @@ const Index = () => {
             onCardClose={() => setIsSelected(false)}
           />
         </Rig>
+
         <Banner
           position={[0, -0.15, 0]}
           radius={isSelected ? 0 : cards.length / 5 + 0.2}
