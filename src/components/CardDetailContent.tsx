@@ -14,7 +14,7 @@ const CardDetailContent = ({ isVertical = false, data }: Props) => {
 
   return (
     <div
-      className={`bg-[#fefefecc] rounded-2xl shadow-md p-8  duration-0.2 z-10 absolute left-1/2 top-1/2 ${className}`}
+      className={`bg-[#fefefecc] rounded-2xl shadow-md p-8  duration-0.2 z-10 absolute left-1/2 top-1/2 box-border ${className}`}
     >
       <div className="relative z-[10] overflow-y-auto w-full h-full">
         <h1 className="text-3xl font-bold text-[#1b2a24] mb-6">

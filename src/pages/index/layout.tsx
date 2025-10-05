@@ -18,9 +18,7 @@ const Index = () => {
         // }}
         dpr={isMobileDevice ? [1, 1.5] : [1, 2]}
         performance={
-          isMobileDevice
-            ? { min: 0.5, max: 0.8, debounce: 300 }
-            : { min: 1, max: 1 }
+          isMobileDevice ? { min: 0.5, max: 0.8 } : { min: 1, max: 1 }
         }
       >
         <Outlet />
