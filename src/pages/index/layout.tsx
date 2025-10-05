@@ -9,7 +9,7 @@ import { isMobileDevice } from "@/utils";
 const Index = () => {
   return (
     <>
-      <div id="html" className="w-screen h-screen overflow-scroll absolute" />
+      <div id="html" className="w-screen h-svh overflow-scroll absolute" />
 
       <Canvas
         camera={{ position: [0, 0, 100], fov: 15 }}
