@@ -9,7 +9,7 @@
 html,
 body,
 #root {
-  width: 100svw;
+  width: 100%;
   height: 100svh;
   margin: 0;
   padding: 0;
@@ -47,6 +47,7 @@ svg {
 }
 
 canvas {
+  height: 100svh;
   opacity: 0;
   touch-action: none;
   animation: fade-in 5s ease 1s forwards;
