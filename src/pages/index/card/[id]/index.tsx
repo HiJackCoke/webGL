@@ -97,6 +97,9 @@ const Index = () => {
             radius={0.1}
             position={[0, 0, 0]}
             rotation={[0, 0, 0]}
+            onClose={() => {
+              navigate(-1);
+            }}
           />
         </Rig>
       </ScrollControls>

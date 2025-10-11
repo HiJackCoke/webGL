@@ -58,7 +58,7 @@ const Carousel = <T extends CardType>({
     THREE.Object3D<THREE.Object3DEventMap>["uuid"] | null
   >(null);
 
-  const navigateRef = useRef("");
+  // const navigateRef = useRef("");
   const animationRef = useRef<AnimationRef>({
     navigation: 0,
     scroll: 0,
@@ -108,9 +108,9 @@ const Carousel = <T extends CardType>({
       animate();
     };
 
-  const handleDetail = (card: T) => () => {
-    navigateRef.current = `/card/${card.id}`;
-  };
+  // const handleDetail = (card: T) => () => {
+  //   navigateRef.current = `/card/${card.id}`;
+  // };
 
   // const animateNavigation = (card: CardMeshRef, delta: number) => {
   //   if (!navigateRef.current) return;
@@ -148,6 +148,8 @@ const Carousel = <T extends CardType>({
     isOff: boolean,
     delta: number
   ) => {
+    if (!selectedMeshRef.current) return;
+
     const selectedMeshScale = SCALE + 0.8;
 
     const isCompleted = selectedMeshRef.current?.mesh.scale.equals(
@@ -155,7 +157,6 @@ const Carousel = <T extends CardType>({
     );
 
     if (isCompleted) {
-      if (!selectedMeshRef.current) return;
       scroll.el.style.pointerEvents = "";
 
       navigate(`/card/${selectedMeshRef.current.id}`);
@@ -232,7 +233,6 @@ const Carousel = <T extends CardType>({
         key={id}
         ref={(el) => (meshesRef.current[index] = el)}
         url={imageUrl}
-        isSelected={isSelected}
         bent={isSelected ? 0 : -0.1}
         zoom={isSelected ? 1 : 1.5}
         position={position}
@@ -244,8 +244,8 @@ const Carousel = <T extends CardType>({
         onPointerOver={() => onCardPointerOver?.(card)}
         onPointerOut={() => onCardPointerOut?.(card)}
         onClick={handleClick(card, position)}
-        onClose={handleClose(card)}
-        onDetail={handleDetail(card)}
+        onClose={isSelected ? handleClose(card) : undefined}
+        // onDetail={isSelected ? handleDetail(card) : undefined}
       />
     );
   });

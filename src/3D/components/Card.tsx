@@ -133,7 +133,7 @@ const Card = forwardRef<THREE.Mesh, Props>(
           )}
 
           <Button
-            visible={isSelected}
+            visible={!!onDetail}
             label="🔍"
             width={0.15}
             height={0.15}
@@ -145,7 +145,7 @@ const Card = forwardRef<THREE.Mesh, Props>(
 
           <Button
             variant="danger"
-            visible={isSelected}
+            visible={!!onClose}
             label="✖"
             width={0.15}
             height={0.15}
