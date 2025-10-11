@@ -23,7 +23,6 @@ type Props<T extends CardType> = {
 };
 
 interface CardMeshRef {
-  id: number;
   mesh: THREE.Mesh;
   originPosition: THREE.Vector3Tuple;
 }
@@ -96,7 +95,6 @@ const Carousel = <T extends CardType>({
 
         animationRef.current.scroll = targetOffset;
         selectedMeshRef.current = {
-          id: card.id,
           mesh,
           originPosition: position,
         };
@@ -112,36 +110,37 @@ const Carousel = <T extends CardType>({
     navigateRef.current = `/card/${card.id}`;
   };
 
-  // const animateNavigation = (card: CardMeshRef, delta: number) => {
-  //   if (!navigateRef.current) return;
-  //   if (!card) return;
+  const animateNavigation = (card: CardMeshRef, delta: number) => {
+    if (!navigateRef.current) return;
+    if (!card) return;
 
-  //   const rig = card.mesh.parent;
-  //   if (!rig) return;
+    const rig = card.mesh.parent;
+    if (!rig) return;
 
-  //   const originRotation = new THREE.Euler(0, 0, 0);
+    const originRotation = new THREE.Euler(0, 0, 0);
 
-  //   easing.dampE(card.mesh.rotation, originRotation, 0.1, delta);
+    easing.dampE(card.mesh.rotation, originRotation, 0.1, delta);
 
-  //   // 첫번째 인덱스 카드 rotation이 항상 0인 이슈 수정
-  //   if (card.mesh.rotation.y === 0) {
-  //     card.mesh.rotation.y = scroll.offset;
-  //   }
 
-  //   // 스크롤 위치 강제 전환x
-  //   scroll.offset = 0;
+    // 첫번째 인덱스 카드 rotation이 항상 0인 이슈 수정
+    if (card.mesh.rotation.y === 0) {
+      card.mesh.rotation.y = scroll.offset;
+    }
 
-  //   const isCenter =
-  //     Math.abs(
-  //       (animationRef.current.navigation % 1) - (card.mesh.rotation.y % 1)
-  //     ) < EPSILON;
+    // 스크롤 위치 강제 전환x
+    scroll.offset = 0;
 
-  //   if (isCenter) {
-  //     navigate(navigateRef.current);
-  //   }
+    const isCenter =
+      Math.abs(
+        (animationRef.current.navigation % 1) - (card.mesh.rotation.y % 1)
+      ) < EPSILON;
 
-  //   animationRef.current.navigation = card.mesh.rotation.y;
-  // };
+    if (isCenter) {
+      navigate(navigateRef.current);
+    }
+
+    animationRef.current.navigation = card.mesh.rotation.y;
+  };
 
   const animateRotation = (
     card: CardMeshRef,
@@ -155,10 +154,7 @@ const Carousel = <T extends CardType>({
     );
 
     if (isCompleted) {
-      if (!selectedMeshRef.current) return;
       scroll.el.style.pointerEvents = "";
-
-      navigate(`/card/${selectedMeshRef.current.id}`);
     }
 
     meshesRef.current.forEach((mesh) => {
@@ -208,7 +204,7 @@ const Carousel = <T extends CardType>({
 
     if (!card) return;
 
-    // animateNavigation(card, delta);
+    animateNavigation(card, delta);
     animate(card, delta);
   });
 
