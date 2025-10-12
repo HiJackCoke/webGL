@@ -13,8 +13,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import CardDetailContent from "@/components/CardDetailContent";
 
 import { createRoot } from "react-dom/client";
-
-const GAP = 0.05;
+import { getResponseMesh } from "@/3D/utils";
 
 const Index = () => {
   const ref = useRef<THREE.Mesh | null>(null);
@@ -31,32 +30,12 @@ const Index = () => {
   }, [viewport.aspect]);
 
   useFrame((state, delta) => {
-    const { aspect, width, height, distance } = state.viewport;
-
     if (!ref.current) return;
-
     // const { width: w, height: h } = getMeshPixelSize(ref.current, camera, size);
 
-    if (aspect < 1) {
-      const fixeHeight = (((height / distance) * 10) / aspect) * 1.5;
-      const scale = fixeHeight * 0.4;
-
-      const y = scale * (0.5 + GAP);
-
-      easing.damp3(ref.current.scale, scale, 0.2, delta);
-      easing.damp3(ref.current.position, [0, y, 0], 0.2, delta);
-
-      // easing.damp3(ref.current.scale, 2 / aspect, delta);
-      // easing.damp3(ref.current.position, [0, 1.5 - aspect, 0], 0.2, delta);
-    } else {
-      const fixedWidth = (width / distance) * 10;
-      const scale = fixedWidth * 0.4;
-
-      const x = -scale * (0.5 + GAP);
-
-      easing.damp3(ref.current.scale, scale, 0.2, delta);
-      easing.damp3(ref.current.position, [x, 0, 0], 0.2, delta);
-    }
+    const { scale, position } = getResponseMesh(state);
+    easing.damp3(ref.current.scale, scale, 0.2, delta);
+    easing.damp3(ref.current.position, position, 0.2, delta);
   });
 
   const card = cards.find((card) => card.id === Number(params.id));
@@ -98,7 +77,7 @@ const Index = () => {
             position={[0, 0, 0]}
             rotation={[0, 0, 0]}
             onClose={() => {
-              navigate(-1);
+              navigate(`/?id=${card.id}`);
             }}
           />
         </Rig>
