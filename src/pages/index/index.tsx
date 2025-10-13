@@ -6,12 +6,22 @@ import Banner from "../../3D/components/Banner";
 
 import cards from "../../constants/cards";
 
-import { MutableRefObject, useEffect, useRef, useState } from "react";
+import {
+  MutableRefObject,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
+import { useLocation } from "react-router-dom";
 
 const Index = () => {
   const portal = useRef(
     document.getElementById("html")
   ) as MutableRefObject<HTMLDivElement>;
+
+  const location = useLocation();
+  const selectedId = new URLSearchParams(location.search).get("id");
 
   const [isSelected, setIsSelected] = useState(false);
 
@@ -37,16 +47,25 @@ const Index = () => {
     };
   }, [portal]);
 
+  useLayoutEffect(() => {
+    if (selectedId) {
+      setIsSelected(true);
+    } else {
+      setIsSelected(false);
+    }
+  }, [selectedId]);
+
   return (
     <>
       <ScrollControls pages={5} infinite>
         <Rig
+          animation={!selectedId}
           scrollHintVisible
-          zoom={1.5}
           rotation={[0, 0, isSelected ? 0 : 0.15]}
         >
           <Carousel
             cards={cards}
+            selectedId={selectedId ? Number(selectedId) : undefined}
             onCardClick={() => setIsSelected(true)}
             onCardClose={() => setIsSelected(false)}
           />

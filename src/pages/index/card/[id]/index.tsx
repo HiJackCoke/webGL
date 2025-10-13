@@ -77,7 +77,9 @@ const Index = () => {
             position={[0, 0, 0]}
             rotation={[0, 0, 0]}
             onClose={() => {
-              navigate(`/?id=${card.id}`);
+              navigate(`/?id=${card.id}`, {
+                replace: true,
+              });
             }}
           />
         </Rig>

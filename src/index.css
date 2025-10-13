@@ -48,7 +48,8 @@ svg {
 
 canvas {
   height: 100svh;
-  opacity: 0;
   touch-action: none;
-  animation: fade-in 5s ease 1s forwards;
+  opacity: 1;
+  /* opacity: 0; */
+  /* animation: fade-in 5s ease 1s forwards; */
 }

@@ -7,6 +7,7 @@ import { easing } from "maath";
 import ScrollHint from "./ScrollHint";
 
 interface Props {
+  animation?: boolean;
   zoom?: number;
   rotation?: [number, number, number];
   children: ReactNode;
@@ -17,6 +18,7 @@ interface Props {
 }
 
 const Rig = ({
+  animation = true,
   zoom = 1,
   rotation = [0, 0, 0],
   scrollHintVisible = false,
@@ -59,10 +61,27 @@ const Rig = ({
     //   delta
     // );
     if (state.scene.fog) {
-      easing.damp(state.scene.fog, "near", fogPosition[0], 0.3, delta);
-      easing.damp(state.scene.fog, "far", fogPosition[1], 0.3, delta);
+      easing.damp(
+        state.scene.fog,
+        "near",
+        fogPosition[0],
+        animation ? 0.3 : 0,
+        delta
+      );
+      easing.damp(
+        state.scene.fog,
+        "far",
+        fogPosition[1],
+        animation ? 0.3 : 0,
+        delta
+      );
     }
-    easing.damp3(state.camera.position, cameraPosition, 0.3, delta);
+    easing.damp3(
+      state.camera.position,
+      cameraPosition,
+      animation ? 0.3 : 0,
+      delta
+    );
 
     easing.dampE(
       ref.current.rotation,
@@ -71,7 +90,7 @@ const Rig = ({
         vertical ? rotation[1] : circleRotation,
         rotation[2],
       ],
-      0.1,
+      animation ? 0.1 : 0,
       delta
     );
 
