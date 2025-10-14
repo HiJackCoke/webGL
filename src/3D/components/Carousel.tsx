@@ -282,25 +282,26 @@ const Carousel = <T extends CardType>({
 
     if (!card) return;
 
-    animate(card, !!selectedID, [state, delta]);
+    animate(card, !!selectedId, [state, delta]);
   });
 
   useEffect(() => {
-    if (selectedID) {
-      const index = cards.findIndex((card) => card.id === selectedID);
+    if (selectedId) {
+      const index = cards.findIndex((card) => card.id === selectedId);
       const mesh = meshesRef.current[index];
       if (!mesh) return;
 
       const originPosition = getCardPosition(index);
       // const originRotation = getCardRotation(index);
 
-      selectMesh(mesh, selectedID, originPosition);
+      selectMesh(mesh, selectedId, originPosition);
     }
-  }, [selectedID]);
+  }, [selectedId]);
 
   useEffect(() => {
     const isFinishedReversAnimation =
       !selectedUUIDRef.current && !selectedId && !selectedMeshRef.current;
+
     if (isFinishedReversAnimation) {
       setSelectedID(undefined);
     }
@@ -336,4 +337,3 @@ const Carousel = <T extends CardType>({
 };
 
 export default Carousel;
-
