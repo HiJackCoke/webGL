@@ -28,7 +28,7 @@ interface CardMeshRef {
   id: number;
   mesh: THREE.Mesh;
   originPosition: THREE.Vector3Tuple;
-  originRotation: THREE.Euler;
+  // originRotation: THREE.Euler;
 }
 
 type ScrollControlsState = ReturnType<typeof useScroll> & {
@@ -73,13 +73,13 @@ const Carousel = <T extends CardType>({
   };
 
   const handleClick =
-    (card: T, position: THREE.Vector3Tuple, rotation: THREE.Euler) =>
+    (card: T, position: THREE.Vector3Tuple) =>
     (_: unknown, mesh: THREE.Mesh | null) => {
       if (!mesh) return;
 
       if (selectedUUIDRef.current === mesh.uuid) return;
 
-      selectMesh(mesh, card.id, position, rotation);
+      selectMesh(mesh, card.id, position);
 
       const index = meshesRef.current.findIndex(
         (mesh) => mesh?.uuid === selectedUUIDRef.current
@@ -176,17 +176,14 @@ const Carousel = <T extends CardType>({
             card.mesh.rotation.z
           )
         );
-        const isOriginRotationEquals = card.mesh.rotation.equals(
-          card.originRotation
-        );
+        // const isOriginRotationEquals = card.mesh.rotation.equals(
+        //   card.originRotation
+        // );
 
         if (isPositionEquals && isRotationEquals) {
-          if (
-            isScaleEquals &&
-            isOriginPositionEquals &&
-            isOriginRotationEquals
-          ) {
+          if (isScaleEquals && isOriginPositionEquals) {
             selectedMeshRef.current = null;
+
             navigate("/", { replace: true });
           }
 
@@ -194,7 +191,7 @@ const Carousel = <T extends CardType>({
 
           animateScale(card, false, 0.1, delta);
           easing.damp3(card.mesh.position, originPosition, 0.1, delta);
-          easing.dampE(card.mesh.rotation, card.originRotation, 0, delta);
+          // easing.dampE(card.mesh.rotation, card.originRotation, 0, delta);
           return;
         }
 
@@ -210,6 +207,8 @@ const Carousel = <T extends CardType>({
 
     return animate;
   };
+
+  // 사용 예시
 
   const animateToCenter = (
     index: number,
@@ -242,15 +241,15 @@ const Carousel = <T extends CardType>({
   const selectMesh = (
     mesh: THREE.Mesh,
     cardID: number,
-    originPosition: THREE.Vector3Tuple,
-    originRotation: THREE.Euler
+    originPosition: THREE.Vector3Tuple
+    // originRotation: THREE.Euler
   ) => {
     selectedUUIDRef.current = mesh.uuid;
     selectedMeshRef.current = {
       id: cardID,
       mesh,
       originPosition,
-      originRotation,
+      // originRotation,
     };
   };
 
@@ -293,9 +292,9 @@ const Carousel = <T extends CardType>({
       if (!mesh) return;
 
       const originPosition = getCardPosition(index);
-      const originRotation = getCardRotation(index);
+      // const originRotation = getCardRotation(index);
 
-      selectMesh(mesh, selectedID, originPosition, originRotation);
+      selectMesh(mesh, selectedID, originPosition);
     }
   }, [selectedID]);
 
@@ -329,7 +328,7 @@ const Carousel = <T extends CardType>({
         rotation={rotation}
         onPointerOver={() => onCardPointerOver?.(card)}
         onPointerOut={() => onCardPointerOut?.(card)}
-        onClick={handleClick(card, position, rotation)}
+        onClick={handleClick(card, position)}
         onClose={isSelected ? handleClose(card) : undefined}
       />
     );
@@ -337,3 +336,4 @@ const Carousel = <T extends CardType>({
 };
 
 export default Carousel;
+
