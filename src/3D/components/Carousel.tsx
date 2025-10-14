@@ -64,7 +64,6 @@ const Carousel = <T extends CardType>({
   >(null);
 
   const scrollRef = useRef(0);
-  const positionEquals = useRef(false);
 
   const [selectedID, setSelectedID] = useState(selectedId);
 
@@ -134,81 +133,82 @@ const Carousel = <T extends CardType>({
     }
   };
 
-  const animate = (
-    card: CardMeshRef,
-    reverse: boolean,
-    [state, delta]: Parameters<RenderCallback>
-  ) => {
-    // positionEquals는 해당 함수에서만 쓰기 때문에 클로저 사용하는 방법 개선
+  const createAnimate = () => {
+    let positionEquals = false; // 클로저 내부 변수
 
-    if (!card?.mesh.parent) return;
+    const animate = (
+      card: CardMeshRef,
+      reverse: boolean,
+      [state, delta]: Parameters<RenderCallback>
+    ) => {
+      if (!card?.mesh.parent) return;
 
-    const isCenter =
-      Math.abs((scroll.offset % 1) - (scrollRef.current % 1)) < EPSILON;
+      const isCenter =
+        Math.abs((scroll.offset % 1) - (scrollRef.current % 1)) < EPSILON;
 
-    if (isCenter) {
+      if (!isCenter) return;
+
       if (!reverse) {
         easing.damp3(card.mesh.position, [0, 0, 0], 0.1, delta);
-
         navigateDetail();
         animateScale(card, true, 0.1, delta);
-      } else {
-        const { position, scale } = getResponseMesh(state);
+        return;
+      }
 
-        const isOff = selectedUUIDRef.current === null;
+      const { position, scale } = getResponseMesh(state);
+      const isOff = selectedUUIDRef.current === null;
 
-        if (isOff) {
-          const originPosition = new THREE.Vector3(...card.originPosition);
+      if (isOff) {
+        const originPosition = new THREE.Vector3(...card.originPosition);
+        const originScale = new THREE.Vector3(1, 1, 1);
 
-          const originScale = new THREE.Vector3(1, 1, 1);
+        const isScaleEquals = card.mesh.scale.equals(originScale);
+        const isOriginPositionEquals =
+          card.mesh.position.equals(originPosition);
 
-          const isScaleEquals = card.mesh.scale.equals(originScale);
-          const isOriginPositionEquals =
-            card.mesh.position.equals(originPosition);
+        const isPositionEquals =
+          card.mesh.position.equals(new THREE.Vector3(0, 0, 0)) ||
+          positionEquals;
+        const isRotationEquals = card.mesh.rotation.equals(
+          new THREE.Euler(
+            card.mesh.rotation.x,
+            card.mesh.rotation.y,
+            card.mesh.rotation.z
+          )
+        );
+        const isOriginRotationEquals = card.mesh.rotation.equals(
+          card.originRotation
+        );
 
-          const isPositionEquals =
-            card.mesh.position.equals(new THREE.Vector3(0, 0, 0)) ||
-            positionEquals.current;
-          const isRotationEquals = card.mesh.rotation.equals(
-            new THREE.Euler(
-              card.mesh.rotation.x,
-              card.mesh.rotation.y,
-              card.mesh.rotation.z
-            )
-          );
-          const isOriginRotationEquals = card.mesh.rotation.equals(
-            card.originRotation
-          );
-
-          if (isPositionEquals && isRotationEquals) {
-            if (
-              isScaleEquals &&
-              isOriginPositionEquals &&
-              isOriginRotationEquals
-            ) {
-              selectedMeshRef.current = null;
-              navigate("/", { replace: true });
-            }
-            positionEquals.current = true;
-
-            animateScale(card, false, 0.1, delta);
-            easing.damp3(card.mesh.position, originPosition, 0.1, delta);
-            easing.dampE(card.mesh.rotation, card.originRotation, 0, delta);
-
-            return;
+        if (isPositionEquals && isRotationEquals) {
+          if (
+            isScaleEquals &&
+            isOriginPositionEquals &&
+            isOriginRotationEquals
+          ) {
+            selectedMeshRef.current = null;
+            navigate("/", { replace: true });
           }
 
-          easing.damp3(card.mesh.position, [0, 0, 0], 0.2, delta);
-        } else {
-          animateScale(card, true, 0, delta);
+          positionEquals = true; // 클로저 변수 업데이트
 
-          easing.damp3(card.mesh.position, position, 0, delta);
-          easing.dampE(card.mesh.rotation, [0, 0, 0], 0, delta);
-          easing.damp3(card.mesh.scale, scale, 0, delta);
-          selectedUUIDRef.current = null;
+          animateScale(card, false, 0.1, delta);
+          easing.damp3(card.mesh.position, originPosition, 0.1, delta);
+          easing.dampE(card.mesh.rotation, card.originRotation, 0, delta);
+          return;
         }
+
+        easing.damp3(card.mesh.position, [0, 0, 0], 0.2, delta);
+      } else {
+        animateScale(card, true, 0, delta);
+        easing.damp3(card.mesh.position, position, 0, delta);
+        easing.dampE(card.mesh.rotation, [0, 0, 0], 0, delta);
+        easing.damp3(card.mesh.scale, scale, 0, delta);
+        selectedUUIDRef.current = null;
       }
-    }
+    };
+
+    return animate;
   };
 
   const animateToCenter = (
@@ -254,13 +254,7 @@ const Carousel = <T extends CardType>({
     };
   };
 
-  useFrame((state, delta) => {
-    const card = selectedMeshRef.current;
-
-    if (!card) return;
-
-    animate(card, !!selectedID, [state, delta]);
-  });
+  const animate = useCallback(createAnimate(), []);
 
   const getCardRotation = useCallback((index: number) => {
     const circleRotation = (index / count) * Math.PI * 2;
@@ -283,6 +277,14 @@ const Carousel = <T extends CardType>({
 
     return position;
   }, []);
+
+  useFrame((state, delta) => {
+    const card = selectedMeshRef.current;
+
+    if (!card) return;
+
+    animate(card, !!selectedID, [state, delta]);
+  });
 
   useEffect(() => {
     if (selectedID) {
